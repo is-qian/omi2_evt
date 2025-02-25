@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.dts": "dts",
+        "uart.h": "c"
+    }
+}

@@ -3,4 +3,5 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 
 project(evt_test)
 
-target_sources(app PRIVATE src/main.c)
+file(GLOB app_sources src/*.c)
+target_sources(app PRIVATE ${app_sources})
