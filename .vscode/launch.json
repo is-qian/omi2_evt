@@ -1,0 +1,12 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "nrf-connect",
+			"request": "launch",
+			"name": "Launch omi2_evt",
+			"config": "${workspaceFolder}/build/omi2_evt",
+			"runToEntryPoint": "main"
+		}
+	]
+}

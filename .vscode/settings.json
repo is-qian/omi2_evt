@@ -1,6 +1,18 @@
 {
     "files.associations": {
         "*.dts": "dts",
-        "uart.h": "c"
-    }
+        "uart.h": "c",
+        "shell_bt_nus.h": "c",
+        "adc.h": "c",
+        "log.h": "c",
+        "nordic-nrf-gpio.h": "c",
+        "gpio.h": "c",
+        "sensor.h": "c",
+        "stdlib.h": "c",
+        "regulator.h": "c"
+    },
+    "nrf-connect.debugging.bindings": {
+        "${workspaceFolder}/build/omi2_evt": "Launch omi2_evt"
+    },
+    "nrf5-vscode.seggerEmbeddedStudioPath": ""
 }

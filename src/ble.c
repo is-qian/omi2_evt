@@ -11,7 +11,7 @@
 #include <shell/shell_bt_nus.h>
 #include <stdio.h>
 
-LOG_MODULE_REGISTER(app);
+LOG_MODULE_REGISTER(ble_shell);
 
 #define DEVICE_NAME             CONFIG_BT_DEVICE_NAME
 #define DEVICE_NAME_LEN	        (sizeof(DEVICE_NAME) - 1)
