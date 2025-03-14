@@ -32,6 +32,12 @@
 		};
 	};
 	
+	motor_pin: motor {
+		compatible = "nordic,gpio-pins";
+		gpios = <&gpio0 25 GPIO_ACTIVE_HIGH>;
+		status = "okay";
+	};
+	
 	lsm6dso_en_pin: lsm6dso_en_pin {
 		compatible = "nordic,gpio-pins";
 		gpios = <&gpio1 12 GPIO_ACTIVE_HIGH>;
