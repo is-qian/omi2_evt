@@ -9,7 +9,6 @@
 
 static const struct device *const flash = DEVICE_DT_GET(DT_NODELABEL(spi_flash));
 static const struct gpio_dt_spec flash_mosi = GPIO_DT_SPEC_GET_OR(DT_NODELABEL(flash_mosi_pin), gpios, {0});
-static const struct gpio_dt_spec sd_en = GPIO_DT_SPEC_GET_OR(DT_NODELABEL(sdcard_en_pin), gpios, {0});
 static bool initialized;
 
 // sdk\modules\hal\nordic\nrfx\drivers\src\nrfx_spim.c
