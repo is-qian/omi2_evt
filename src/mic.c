@@ -1,5 +1,5 @@
 #include <stdio.h>
-
+#include <stdlib.h>
 #include <zephyr/device.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/kernel.h>
@@ -42,7 +42,7 @@ static struct dmic_cfg cfg = {
 	.channel =
 		{
 			.req_num_streams = 1,
-			.req_num_chan = 1,
+			.req_num_chan = 2,
 		},
 };
 
@@ -103,6 +103,7 @@ static int cmd_mic_capture(const struct shell *sh, size_t argc, char **argv)
 		if (ret < 0)
 		{
 			shell_error(sh, "DMIC read failed (%d)", ret);
+			dmic_trigger(dmic, DMIC_TRIGGER_STOP);
 			goto cleanup;
 		}
 
@@ -150,8 +151,8 @@ int mic_init(void)
 	gpio_pin_configure_dt(&mic_wake, GPIO_OUTPUT);
 	gpio_pin_set(mic_wake.port, mic_wake.pin, 1);
 
-	cfg.channel.req_chan_map_lo = dmic_build_channel_map(0, 0, PDM_CHAN_RIGHT);
-	// dmic_build_channel_map(1, 0, PDM_CHAN_RIGHT);
+	cfg.channel.req_chan_map_lo = dmic_build_channel_map(0, 0, PDM_CHAN_LEFT) | 
+	dmic_build_channel_map(1, 0, PDM_CHAN_RIGHT);
 
 	initialized = true;
 
