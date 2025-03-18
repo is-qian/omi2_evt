@@ -28,7 +28,7 @@
 		usr_btn: usr-btn {
 			gpios = <&gpio0 26 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
 			label = "USR";
-			zephyr,code = <INPUT_KEY_BACK>;
+			zephyr,code = <INPUT_KEY_ENTER>;
 		};
 	};
 	
@@ -100,6 +100,7 @@
 	};
 	aliases {
 		dmic0 = &pdm0;
+		buttons = &buttons;
 	};
 };
 

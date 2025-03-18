@@ -50,6 +50,12 @@ This project uses [Zephyr](https://docs.zephyrproject.org/latest/getting_started
 | `led on $num` | Turn ON LED (0-3) |
 | `led off $num` | Turn OFF LED (0-3) |
 
+### Button
+
+| Command | Description |
+| --- | --- |
+| `button check` | Check button state |
+
 ### Motor
 
 | Command | Description |
