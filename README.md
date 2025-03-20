@@ -4,7 +4,7 @@ This document describes the commands that can be used to test the OMI EVT board.
 
 ## Initialization
 
-This project uses [Zephyr](https://docs.zephyrproject.org/latest/getting_started/index.html) as the OS and [nRF Connect SDK](https://docs.nordicsemi.com/bundle/ncs-latest/page/zephyr/develop/toolchains/zephyr_sdk.html) for BLE support.Before using the commands below, make sure you have vscode and nRF Connect SDK installed. You can follow the [nRF Connect SDK Getting Started](https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/installation/recommended_versions.html#requirements-nrfvsc) guide to install it.
+This project uses [Zephyr](https://docs.zephyrproject.org/latest/getting_started/index.html) as the OS and [nRF Connect SDK](https://docs.nordicsemi.com/bundle/ncs-latest/page/zephyr/develop/toolchains/zephyr_sdk.html) for BLE support.Before using the commands below, make sure you have vscode and nRF Connect SDK installed. You can follow the [nRF Connect SDK Getting Started](https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/installation/install_ncs.html) guide to install it.
 
 ## Commands
 
@@ -77,4 +77,4 @@ This project uses [Zephyr](https://docs.zephyrproject.org/latest/getting_started
 
 | Command | Description |
 | --- | --- |
-| `off` | Turn OFF the device |
+| `System off` | Turn OFF the device |
