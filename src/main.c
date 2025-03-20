@@ -32,8 +32,9 @@ int main(void)
 	{
 		return -1;
 	}
-	// shell_execute_cmd(NULL, "ble on");
 	shell_execute_cmd(NULL, "sd mount");
+	shell_execute_cmd(NULL, "ble on");
+	shell_execute_cmd(NULL, "button check");
 	printk("Starting omi2 EVT test...\n");
 	return 0;
 }

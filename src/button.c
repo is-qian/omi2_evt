@@ -39,16 +39,25 @@ static int cmd_buttons_check(const struct shell *sh, size_t argc, char **argv)
 
 		ret = k_msgq_get(&input_q, &evt, K_SECONDS(5));
 		if (ret == -EAGAIN) {
-			shell_error(sh, "No input received");
-			return 0;
+			// shell_error(sh, "No input received");
+			// return 0;
+            continue;
 		}
 
 		switch (evt.code) {
 		case INPUT_KEY_ENTER:
 			if (evt.value == 1) {
 				shell_print(sh, "usr button pressed");
+				shell_execute_cmd(NULL, "motor on");
+				shell_execute_cmd(NULL, "led on 0");
+				shell_execute_cmd(NULL, "led on 1");
+				shell_execute_cmd(NULL, "led on 2");
 			} else {
 				shell_print(sh, "usr button released");
+				shell_execute_cmd(NULL, "motor off");
+				shell_execute_cmd(NULL, "led off 0");
+				shell_execute_cmd(NULL, "led off 1");
+				shell_execute_cmd(NULL, "led off 2");
 			}
 			break;
 		}

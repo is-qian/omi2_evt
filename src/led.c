@@ -8,7 +8,7 @@ static const struct gpio_dt_spec led_red = GPIO_DT_SPEC_GET_OR(DT_NODELABEL(led_
 static const struct gpio_dt_spec led_green = GPIO_DT_SPEC_GET_OR(DT_NODELABEL(led_green), gpios, {0});
 static const struct gpio_dt_spec led_blue = GPIO_DT_SPEC_GET_OR(DT_NODELABEL(led_blue), gpios, {0});
 
-static int led_control(int led_num, bool state)
+static int led_control(int led_num, int state)
 {
     int ret;
     const struct gpio_dt_spec *led_spec;
@@ -33,7 +33,7 @@ static int led_control(int led_num, bool state)
         return ret;
     }
 
-    ret = gpio_pin_set(led_spec->port, led_spec->pin, state);
+    ret = gpio_pin_set_dt(led_spec, state);
     if (ret < 0)
     {
         return ret;

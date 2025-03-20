@@ -7,6 +7,7 @@
 #include <zephyr/drivers/i2c.h>
 #include <zephyr/drivers/sensor.h>
 #include <nrfx.h>
+#include <zephyr/dt-bindings/gpio/nordic-nrf-gpio.h>
 
 LOG_MODULE_REGISTER(IMU, CONFIG_SENSOR_LOG_LEVEL);
 
@@ -81,7 +82,7 @@ static int imu_poweron(void)
     static const struct gpio_dt_spec lsm6dso_en = GPIO_DT_SPEC_GET_OR(DT_NODELABEL(lsm6dso_en_pin), gpios, {0});
 
     LOG_DBG("IMU power on\n");
-    ret = gpio_pin_configure_dt(&lsm6dso_en, GPIO_OUTPUT);
+    ret = gpio_pin_configure_dt(&lsm6dso_en, (GPIO_OUTPUT | NRF_GPIO_DRIVE_S0H1));
     if (ret < 0)
     {
         LOG_ERR("Failed to configure pin %d\n", lsm6dso_en.pin);
