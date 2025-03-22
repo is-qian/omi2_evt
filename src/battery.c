@@ -11,7 +11,7 @@
 LOG_MODULE_REGISTER(battery);
 
 #define ADC_RESOLUTION 10
-#define ADC_GAIN ADC_GAIN_1_6
+#define ADC_GAIN ADC_GAIN_1_3
 #define ADC_REFERENCE ADC_REF_INTERNAL
 #define ADC_ACQUISITION_TIME ADC_ACQ_TIME(ADC_ACQ_TIME_MICROSECONDS, 10)
 #define ADC_1ST_CHANNEL_ID 0
@@ -90,8 +90,8 @@ static int cmd_bat_get(const struct shell *sh, size_t argc, char **argv)
         return err;
     }
 
-    shell_print(sh, "ADC raw value: %d", m_buffer[1]);
-    shell_print(sh, "Measured voltage: %f", (m_buffer[1] * 3.6) / 1024 * 2);
+    shell_print(sh, "ADC raw value: %d ", m_buffer[1]);
+    shell_print(sh, "Measured voltage: %f", (m_buffer[1] * 1.8) / 1024 * 3);
     gpio_pin_configure_dt(&bat_read_pin, GPIO_INPUT);
     // set bat_chg_pin to input and read
     err = gpio_pin_configure_dt(&bat_read_pin, GPIO_INPUT | GPIO_PULL_UP);
