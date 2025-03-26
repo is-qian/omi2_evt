@@ -31,7 +31,13 @@
 			zephyr,code = <INPUT_KEY_ENTER>;
 		};
 	};
-	
+
+	power_pin: power {
+		compatible = "nordic,gpio-pins";
+		gpios = <&gpio0 5 GPIO_ACTIVE_LOW>;
+		status = "okay";
+	};
+
 	motor_pin: motor {
 		compatible = "nordic,gpio-pins";
 		gpios = <&gpio0 25 GPIO_ACTIVE_HIGH>;
@@ -107,6 +113,11 @@
 
 &gpio0 {
 	status = "okay";
+	// power_hog {
+	// 	gpios = <5 GPIO_ACTIVE_LOW>;
+	// 	output-low;
+	// 	gpio-hog;
+	// };
 };
 
 &gpio1 {

@@ -7,6 +7,7 @@
 #include <zephyr/kernel.h>
 #include <zephyr/shell/shell.h>
 #include <hal/nrf_saadc.h>
+#include "battery.h"
 
 LOG_MODULE_REGISTER(battery);
 
@@ -18,8 +19,25 @@ LOG_MODULE_REGISTER(battery);
 #define ADC_1ST_CHANNEL_INPUT NRF_SAADC_INPUT_AIN0
 
 static const struct device *const adc_dev = DEVICE_DT_GET(DT_NODELABEL(adc));
+static const struct gpio_dt_spec power_pin = GPIO_DT_SPEC_GET_OR(DT_NODELABEL(power_pin), gpios, {0});
 static const struct gpio_dt_spec bat_read_pin = GPIO_DT_SPEC_GET_OR(DT_NODELABEL(bat_read_pin), gpios, {0});
 static const struct gpio_dt_spec bat_chg_pin = GPIO_DT_SPEC_GET_OR(DT_NODELABEL(bat_chg_pin), gpios, {0});
+
+static struct gpio_callback bat_chg_cb;
+
+bool is_charging = false;
+static void battrey_input_cb(const struct device *dev, struct gpio_callback *cb, uint32_t pins)
+{
+    if(gpio_pin_get(bat_chg_pin.port, bat_chg_pin.pin) == 1) {
+        shell_execute_cmd(NULL, "led on 1");
+        is_charging = true;
+    } else{
+        shell_execute_cmd(NULL, "led off 1");
+        is_charging = false;
+    }
+	return;
+}
+
 
 static const struct adc_channel_cfg m_1st_channel_cfg = {
     .gain = ADC_GAIN,
@@ -60,7 +78,7 @@ static int cmd_bat_get(const struct shell *sh, size_t argc, char **argv)
     err = gpio_pin_configure_dt(&bat_read_pin, GPIO_OUTPUT | NRF_GPIO_DRIVE_S0H1);
     if (err < 0)
     {
-        shell_error(sh, "Failed to configure microphone enable pin (%d)", err);
+        shell_error(sh, "Failed to configure enable pin (%d)", err);
         return err;
     }
     gpio_pin_set(bat_read_pin.port, bat_read_pin.pin, 0);
@@ -93,14 +111,38 @@ static int cmd_bat_get(const struct shell *sh, size_t argc, char **argv)
     shell_print(sh, "ADC raw value: %d ", m_buffer[1]);
     shell_print(sh, "Measured voltage: %f", (m_buffer[1] * 1.8) / 1024 * 3);
     gpio_pin_configure_dt(&bat_read_pin, GPIO_INPUT);
-    // set bat_chg_pin to input and read
-    err = gpio_pin_configure_dt(&bat_read_pin, GPIO_INPUT | GPIO_PULL_UP);
+
+    shell_print(sh, "Charging status: %d", is_charging);
+    return 0;
+}
+
+int bat_init(void)
+{ 
+    int err;
+    err = gpio_pin_configure_dt(&power_pin, GPIO_OUTPUT );
     if (err < 0)
     {
+        LOG_ERR("Failed to configure enable pin (%d)", err);
         return err;
     }
-    err = gpio_pin_get(bat_chg_pin.port, bat_chg_pin.pin);
-    shell_print(sh, "Charging status: %d", err);
+    gpio_pin_set_dt(&power_pin, 0);
+    
+    err = gpio_pin_configure_dt(&bat_read_pin, GPIO_INPUT);
+    if (err < 0)
+    {
+        LOG_ERR("Failed to configure enable pin (%d)", err);
+        return err;
+    }
+    
+    err = gpio_pin_configure_dt(&bat_chg_pin, GPIO_INPUT);
+    if (err < 0)
+    {
+        LOG_ERR("Failed to configure enable pin (%d)", err);
+        return err;
+    }
+    gpio_init_callback(&bat_chg_cb, battrey_input_cb, BIT(bat_chg_pin.pin));
+    gpio_add_callback(bat_chg_pin.port, &bat_chg_cb);
+
     return 0;
 }
 

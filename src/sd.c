@@ -1,6 +1,8 @@
+#include <stdlib.h>
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
 #include <zephyr/drivers/gpio.h>
+#include <zephyr/pm/device.h>
 #include <zephyr/storage/disk_access.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/fs/fs.h>
@@ -10,6 +12,7 @@
 #define DISK_DRIVE_NAME "SDMMC"
 #define DISK_MOUNT_PT "/ext"
 
+static const struct device *const sdcard = DEVICE_DT_GET(DT_NODELABEL(sdhc0));
 static const struct gpio_dt_spec sd_en = GPIO_DT_SPEC_GET_OR(DT_NODELABEL(sdcard_en_pin), gpios, {0});
 
 static struct fs_mount_t mp = {
@@ -23,6 +26,24 @@ static struct fs_mount_t mp = {
 
 static const char *disk_mount_pt = DISK_MOUNT_PT;
 static bool is_mounted = false;
+
+static int sd_enable_power(bool enable)
+{
+	int ret;
+	gpio_pin_configure_dt(&sd_en, GPIO_OUTPUT);
+	if (enable)
+	{
+		ret = gpio_pin_set_dt(&sd_en, 1);
+		pm_device_action_run(sdcard, PM_DEVICE_ACTION_RESUME);
+	} 
+	else
+	{
+		ret = pm_device_action_run(sdcard, PM_DEVICE_ACTION_SUSPEND);
+		// gpio_pin_set_dt(&sd_en,	0);
+	}
+	return ret;
+}
+
 /* List dir entry by path
  *
  * @param path Absolute path to list
@@ -104,6 +125,12 @@ static int cmd_mount(const struct shell *shell, size_t argc, char **argv)
 		uint32_t block_count;
 		uint32_t block_size;
 
+		res = sd_enable_power(true);
+		if (res < 0) {
+			shell_error(shell, "Failed to power on SD card (%d)", res);
+			return res;
+		}
+
 		if (disk_access_ioctl(disk_pdrv,
 							  DISK_IOCTL_CTRL_INIT, NULL) != 0)
 		{
@@ -125,10 +152,10 @@ static int cmd_mount(const struct shell *shell, size_t argc, char **argv)
 			shell_error(shell, "Unable to get sector size");
 			break;
 		}
-		printk("Sector size %u\n", block_size);
+		shell_print(shell, "Sector size %u\n", block_size);
 
 		memory_size_mb = (uint64_t)block_count * block_size;
-		printk("Memory Size(MB) %u\n", (uint32_t)(memory_size_mb >> 20));
+		shell_print(shell, "Memory Size(MB) %u\n", (uint32_t)(memory_size_mb >> 20));
 
 		if (disk_access_ioctl(disk_pdrv,
 							  DISK_IOCTL_CTRL_DEINIT, NULL) != 0)
@@ -152,6 +179,7 @@ static int cmd_mount(const struct shell *shell, size_t argc, char **argv)
 		if (res != 0)
 		{
 			shell_error(shell, "Error formatting filesystem [%d]", res);
+			sd_enable_power(false);
 			return res;
 		}
 
@@ -159,6 +187,7 @@ static int cmd_mount(const struct shell *shell, size_t argc, char **argv)
 		if (res != FS_RET_OK)
 		{
 			shell_print(shell, "Error mounting disk %d.\n", res);
+			sd_enable_power(false);
 			return res;
 		}
 	}
@@ -176,6 +205,7 @@ static int cmd_unmount(const struct shell *shell, size_t argc, char **argv)
 	if (res == 0)
 	{
 		is_mounted = false;
+		sd_enable_power(false);
 		shell_print(shell, "Disk unmounted.\n");
 	}
 	else
@@ -366,9 +396,7 @@ SHELL_CMD_REGISTER(sd, &sub_sd_cmds, "sd", NULL);
 
 int app_sd_init(void)
 {
-	int ret;
-
-	gpio_pin_configure_dt(&sd_en, GPIO_OUTPUT);
-	ret = gpio_pin_set_dt(&sd_en, 1);
-	return ret;
+	shell_execute_cmd(NULL, "sd mount");
+	shell_execute_cmd(NULL, "sd unmount");
+	return 0;
 }

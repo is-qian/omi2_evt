@@ -8,7 +8,7 @@
 #include <zephyr/sys/poweroff.h>
 #include <zephyr/sys/util.h>
 #include <zephyr/shell/shell.h>
-
+#include <zephyr/drivers/wifi/nrf_wifi/bus/rpu_hw_if.h>
 static const struct gpio_dt_spec usr_btn = GPIO_DT_SPEC_GET_OR(DT_NODELABEL(usr_btn), gpios, {0});
 
  static int cmd_sys_off(const struct shell *sh, size_t argc, char **argv)
@@ -23,6 +23,10 @@ static const struct gpio_dt_spec usr_btn = GPIO_DT_SPEC_GET_OR(DT_NODELABEL(usr_
          return 0;
      }
 #endif
+#if defined(CONFIG_WIFI)
+    rpu_disable();
+#endif
+
      shell_print(sh, "\n%s system off demo\n", CONFIG_BOARD);
 
      /* configure usr_btn as input, interrupt as level active to allow wake-up */

@@ -73,15 +73,8 @@ static int cmd_mic_capture(const struct shell *sh, size_t argc, char **argv)
 	}
 
 	// Configure and enable microphone pins
-	ret = gpio_pin_configure_dt(&mic_en, GPIO_OUTPUT);
-	if (ret < 0)
-	{
-		shell_error(sh, "Failed to configure microphone enable pin (%d)", ret);
-		return ret;
-	}
-
-	gpio_pin_set(mic_en.port, mic_en.pin, 1);
-
+	mic_power_on();
+	
 	shell_print(sh, "S");
 	ret = dmic_configure(dmic, &cfg);
 	if (ret < 0)
@@ -128,7 +121,7 @@ cleanup:
 		k_mem_slab_free(&mem_slab, buffer);
 	}
 	shell_print(sh, "E");
-	gpio_pin_set(mic_en.port, mic_en.pin, 0);
+	mic_power_off();
 
 	return ret;
 }
@@ -139,6 +132,26 @@ SHELL_STATIC_SUBCMD_SET_CREATE(sub_mic_cmds,
 
 SHELL_CMD_REGISTER(mic, &sub_mic_cmds, "Microphone", NULL);
 
+int mic_power_off(void)
+{
+	gpio_pin_configure_dt(&mic_thsel, GPIO_OUTPUT);
+	gpio_pin_set_dt(&mic_thsel, 0);
+	gpio_pin_configure_dt(&mic_wake, GPIO_INPUT);
+	gpio_pin_configure_dt(&mic_en, GPIO_OUTPUT);
+	gpio_pin_set(mic_en.port, mic_en.pin, 0);
+	return 0;
+}
+
+int mic_power_on(void)
+{
+	gpio_pin_configure_dt(&mic_thsel, GPIO_OUTPUT);
+	gpio_pin_set_dt(&mic_thsel, 1);
+	gpio_pin_configure_dt(&mic_wake, GPIO_INPUT);
+	gpio_pin_configure_dt(&mic_en, GPIO_OUTPUT);
+	gpio_pin_set_dt(&mic_en, 1);
+	return 0;
+}
+
 int mic_init(void)
 {
 	if (!device_is_ready(dmic))
@@ -146,10 +159,7 @@ int mic_init(void)
 		return -ENODEV;
 	}
 
-	gpio_pin_configure_dt(&mic_thsel, GPIO_OUTPUT);
-	gpio_pin_set(mic_thsel.port, mic_thsel.pin, 1);
-	gpio_pin_configure_dt(&mic_wake, GPIO_OUTPUT);
-	gpio_pin_set(mic_wake.port, mic_wake.pin, 1);
+	mic_power_off();
 
 	cfg.channel.req_chan_map_lo = dmic_build_channel_map(0, 0, PDM_CHAN_LEFT) | 
 	dmic_build_channel_map(1, 0, PDM_CHAN_RIGHT);
