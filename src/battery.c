@@ -134,7 +134,7 @@ int bat_init(void)
         return err;
     }
     
-    err = gpio_pin_configure_dt(&bat_chg_pin, GPIO_INPUT);
+    err = gpio_pin_configure_dt(&bat_chg_pin, GPIO_INPUT | GPIO_PULL_UP);
     if (err < 0)
     {
         LOG_ERR("Failed to configure enable pin (%d)", err);
