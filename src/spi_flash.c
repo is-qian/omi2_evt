@@ -227,13 +227,12 @@ SHELL_CMD_REGISTER(flash, &sub_flash_cmds, "Flash", NULL);
 int flash_init(void)
 {
 	int ret;
-	initialized = true;
-	ret = pm_device_action_run(flash, PM_DEVICE_ACTION_RESUME);
-	if (!device_is_ready(flash))
-	{
-		return -ENODEV;
-	}
-
+	// pm_device_action_run(flash, PM_DEVICE_ACTION_RESUME);
+	// if (!device_is_ready(flash))
+	// {	
+	// 	pm_device_action_run(flash, PM_DEVICE_ACTION_SUSPEND);
+	// 	return -ENODEV;
+	// }
 	ret = pm_device_action_run(flash, PM_DEVICE_ACTION_SUSPEND);
 	if (ret < 0)
 	{
