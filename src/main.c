@@ -42,7 +42,7 @@ int main(void)
 		shell_execute_cmd(NULL, "sys off");
 		return -1;
 	}
-	// shell_execute_cmd(NULL, "ble on");
+	shell_execute_cmd(NULL, "ble on");
 	printk("Starting omi2 EVT test...\n");
 
 	ret = pm_device_runtime_get(buttons);
@@ -56,7 +56,7 @@ int main(void)
 
 	while (1) {
 
-		ret = k_msgq_get(&input_button, &evt, K_SECONDS(10));
+		ret = k_msgq_get(&input_button, &evt, K_SECONDS(60));
 		if (ret == -EAGAIN) {
 			if (!button_pressed && !is_charging)
 				shell_execute_cmd(NULL, "sys off");
